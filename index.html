@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.7.2/min/dropzone.min.js"></script>
+	<title>Document</title>
+	<style>
+		.img-container {
+			display: block;
+			grid-column-gap: 5px;
+		}
+
+		.dz-image>img {
+			display: inline;
+			width: 50px;
+			vertical-align: top;
+		}
+
+		.dropzone {
+			display: inline-block;
+			height: 200px;
+			width: 540px;
+			border: dashed 1px black;
+			background-color: lightblue;
+			text-align: center;
+			/* same as height! */
+		}
+
+		.parent {
+			display: block;
+		}
+
+		.dz-error-mark {
+			display: none;
+		}
+
+		.dz-success-mark {
+			display: none;
+		}
+
+		.dz-error-message {
+			display: none;
+		}
+
+		.dz-details {
+			display: none;
+		}
+
+		.dz-message {
+			display: none;
+		}
+
+		.dz-preview {
+			display: inline-block;
+		}
+
+		.dz-image>img {
+			display: block;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="dropzone" id="dropzone" style="background-image: url(''); background-repeat: no-repeat;">
+		<p><br><br><br><br> lmao</p>
+	</div>
+	<div class="parent">
+		<div class="img-container"></div>
+	</div>
+
+	<script>
+		let imageIndex;
+
+		for (let i = 1; i < 7; i++) {
+			let placeholder = document.createElement('img');
+			placeholder.id = `img-${i}`;
+			placeholder.style.backgroundColor = '#f1f1f1';
+			placeholder.style.border = '1px black solid';
+			placeholder.style.width = '50px'; placeholder.style.height = '50px';
+			placeholder.addEventListener('click', () => {
+				imageIndex = i;
+				for (let j = 1; j < 7; j++) {
+					document.getElementById(`img-${j}`).style.border = '1px black solid';
+				}
+				placeholder.style.border = '2px red solid';
+				let foo = document.getElementById(`img-${imageIndex}`).src;
+				document.getElementById(`dropzone`).style.backgroundImage = `url(${foo})`;
+				//document.querySelector('.img-container').children[imageIndex - 1].children[6].style.display = 'block'
+			});
+			document.body.appendChild(placeholder);
+		}
+		let myDropzone = new Dropzone("div#dropzone", {
+			url: "/post",
+			dictDefaultMessage: "Put your custom message here",
+			previewsContainer: ".img-container",
+		});
+		Dropzone.autoDiscover = false;
+
+		myDropzone.options.myDropzone = {
+			thumbnailWidth: null,
+			thumbnailHeight: 50,
+			init: function () {
+			}
+		};
+
+		myDropzone.on("addedfile", (file) => {
+			let _this = this;
+			let removeButton = Dropzone.createElement(`<button><span>&times;</span></button>`);
+
+			//document.getElementById('img-1').src = 
+			removeButton.addEventListener("click", function (e) {
+				e.preventDefault();
+				e.stopPropagation();
+				file.previewElement.parentNode.removeChild(file.previewElement);
+				document.getElementById(`img-${imageIndex}`).src = '';
+				//_this.set('dropzone', Dropzone.forElement('#img-2'));
+				//gotta remove the stuff form server! because a post request was alr sent at the point of the "drop"
+			});
+			file.previewElement.appendChild(removeButton);
+		});
+
+		myDropzone.on('complete', (file) => {
+			//	console.log(document.querySelector('.dz-image > img'));
+			console.log(document.getElementById(`dropzone`).style)
+			imageURL = file.previewElement.children[0].children[0].src;
+			document.getElementById(`img-${imageIndex}`).src = file.previewElement.children[0].children[0].src;
+			document.getElementById(`dropzone`).style.backgroundImage = `url(${imageURL})`;
+		});
+
+		function removeImage() {
+
+		}
+	</script>
+</body>
+
+</html>
